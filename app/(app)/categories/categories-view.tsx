@@ -24,12 +24,24 @@ import {
 
 type Category = Database["public"]["Tables"]["categories"]["Row"];
 
-const PALETTE = [
-  "#ef4444", "#f97316", "#f59e0b", "#eab308",
-  "#84cc16", "#22c55e", "#10b981", "#14b8a6",
-  "#06b6d4", "#0ea5e9", "#3b82f6", "#6366f1",
-  "#8b5cf6", "#a855f7", "#d946ef", "#ec4899",
-  "#94a3b8",
+const PALETTE: { hex: string; name: string }[] = [
+  { hex: "#ef4444", name: "Vermelho" },
+  { hex: "#f97316", name: "Laranja" },
+  { hex: "#f59e0b", name: "Âmbar" },
+  { hex: "#eab308", name: "Amarelo" },
+  { hex: "#84cc16", name: "Lima" },
+  { hex: "#22c55e", name: "Verde" },
+  { hex: "#10b981", name: "Esmeralda" },
+  { hex: "#14b8a6", name: "Verde-água" },
+  { hex: "#06b6d4", name: "Ciano" },
+  { hex: "#0ea5e9", name: "Céu" },
+  { hex: "#3b82f6", name: "Azul" },
+  { hex: "#6366f1", name: "Anil" },
+  { hex: "#8b5cf6", name: "Violeta" },
+  { hex: "#a855f7", name: "Roxo" },
+  { hex: "#d946ef", name: "Fúcsia" },
+  { hex: "#ec4899", name: "Rosa" },
+  { hex: "#94a3b8", name: "Cinza" },
 ];
 
 interface CategoriesViewProps {
@@ -191,20 +203,20 @@ function CategorySection({
                   {usage[c.id] ?? 0} transações
                 </p>
               </div>
-              <div className="flex gap-1">
+              <div className="flex gap-2">
                 <Button
-                  size="sm"
                   variant="ghost"
                   onClick={() => onEdit(c)}
-                  aria-label="Editar"
+                  aria-label={`Editar categoria ${c.name}`}
+                  className="h-10 w-10 p-0"
                 >
                   <Pencil className="h-4 w-4" />
                 </Button>
                 <Button
-                  size="sm"
                   variant="ghost"
                   onClick={() => onDelete(c)}
-                  aria-label="Excluir"
+                  aria-label={`Excluir categoria ${c.name}`}
+                  className="h-10 w-10 p-0"
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
@@ -279,22 +291,33 @@ function CategoryForm({
         </div>
 
         <div className="space-y-1.5">
-          <Label>Cor</Label>
-          <div className="flex flex-wrap gap-2">
-            {PALETTE.map((c) => (
-              <button
-                key={c}
-                type="button"
-                onClick={() => setColor(c)}
-                className="relative flex h-8 w-8 items-center justify-center rounded-full ring-offset-background transition hover:scale-110"
-                style={{ backgroundColor: c }}
-                aria-label={`Cor ${c}`}
-              >
-                {c === color && (
-                  <Check className="h-4 w-4 text-white drop-shadow" />
-                )}
-              </button>
-            ))}
+          <span id="color-label" className="text-sm font-medium leading-none">
+            Cor
+          </span>
+          <div
+            role="radiogroup"
+            aria-labelledby="color-label"
+            className="flex flex-wrap gap-2"
+          >
+            {PALETTE.map((c) => {
+              const selected = c.hex === color;
+              return (
+                <button
+                  key={c.hex}
+                  type="button"
+                  role="radio"
+                  aria-checked={selected}
+                  onClick={() => setColor(c.hex)}
+                  className="relative flex h-8 w-8 items-center justify-center rounded-full ring-offset-background transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:scale-110 motion-reduce:transition-none motion-reduce:hover:scale-100"
+                  style={{ backgroundColor: c.hex }}
+                  aria-label={c.name}
+                >
+                  {selected && (
+                    <Check className="h-4 w-4 text-white drop-shadow" />
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -305,14 +328,22 @@ function CategoryForm({
             name="icon"
             defaultValue={editing?.icon ?? ""}
             placeholder="Ex: utensils, car, wallet"
+            autoComplete="off"
+            aria-describedby="icon-hint"
           />
-          <p className="text-xs text-muted-foreground">
+          <p id="icon-hint" className="text-xs text-muted-foreground">
             Nome de um ícone do lucide.dev
           </p>
         </div>
 
         {formState?.error && (
-          <p className="text-sm text-destructive">{formState.error}</p>
+          <p
+            role="alert"
+            aria-live="polite"
+            className="text-sm text-destructive"
+          >
+            {formState.error}
+          </p>
         )}
 
         <DialogFooter>

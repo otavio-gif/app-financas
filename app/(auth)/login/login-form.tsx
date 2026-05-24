@@ -23,6 +23,7 @@ export function LoginForm() {
           type="email"
           required
           autoComplete="email"
+          autoFocus
         />
       </div>
       <div className="space-y-1.5">
@@ -36,7 +37,13 @@ export function LoginForm() {
         />
       </div>
       {state?.error && (
-        <p className="text-sm text-destructive">{state.error}</p>
+        <p
+          role="alert"
+          aria-live="polite"
+          className="text-sm text-destructive"
+        >
+          {state.error}
+        </p>
       )}
       <Button type="submit" className="w-full" disabled={pending}>
         {pending ? "Entrando..." : "Entrar"}

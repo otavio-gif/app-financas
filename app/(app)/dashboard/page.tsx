@@ -134,7 +134,9 @@ export default async function DashboardPage() {
                     </div>
                     <span
                       className={`shrink-0 text-sm font-medium tabular-nums ${
-                        isIncome ? "text-emerald-600" : "text-rose-600"
+                        isIncome
+                          ? "text-emerald-700 dark:text-emerald-400"
+                          : "text-rose-700 dark:text-rose-400"
                       }`}
                     >
                       {isIncome ? "+" : "−"}
@@ -164,9 +166,9 @@ function SummaryCard({
 }) {
   const toneClass =
     tone === "positive"
-      ? "text-emerald-600"
+      ? "text-emerald-700 dark:text-emerald-400"
       : tone === "negative"
-        ? "text-rose-600"
+        ? "text-rose-700 dark:text-rose-400"
         : "text-foreground";
 
   return (

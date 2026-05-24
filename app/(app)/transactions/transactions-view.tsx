@@ -95,10 +95,10 @@ export function TransactionsView({
           </span>{" "}
           {transactions.length === 1 ? "transação" : "transações"}
         </span>
-        <span className="text-emerald-600">
+        <span className="text-emerald-700 dark:text-emerald-400">
           + {currencyBRL.format(totalIncome)}
         </span>
-        <span className="text-rose-600">
+        <span className="text-rose-700 dark:text-rose-400">
           − {currencyBRL.format(totalExpense)}
         </span>
         <span className="ml-auto">
@@ -106,8 +106,8 @@ export function TransactionsView({
           <span
             className={`font-medium tabular-nums ${
               totalIncome - totalExpense >= 0
-                ? "text-emerald-600"
-                : "text-rose-600"
+                ? "text-emerald-700 dark:text-emerald-400"
+                : "text-rose-700 dark:text-rose-400"
             }`}
           >
             {currencyBRL.format(totalIncome - totalExpense)}
@@ -173,29 +173,31 @@ export function TransactionsView({
                     </td>
                     <td
                       className={`px-4 py-3 text-right font-medium tabular-nums ${
-                        isIncome ? "text-emerald-600" : "text-rose-600"
+                        isIncome
+                          ? "text-emerald-700 dark:text-emerald-400"
+                          : "text-rose-700 dark:text-rose-400"
                       }`}
                     >
                       {isIncome ? "+" : "−"}
                       {currencyBRL.format(Number(tx.amount))}
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <div className="inline-flex gap-1">
+                      <div className="inline-flex gap-2">
                         <Button
-                          size="sm"
                           variant="ghost"
                           onClick={() =>
                             setDialogState({ mode: "edit", transaction: tx })
                           }
-                          aria-label="Editar"
+                          aria-label={`Editar transação de ${formatDateBR(tx.occurred_on)}${tx.description ? `: ${tx.description}` : ""}`}
+                          className="h-10 w-10 p-0"
                         >
                           <Pencil className="h-4 w-4" />
                         </Button>
                         <Button
-                          size="sm"
                           variant="ghost"
                           onClick={() => setDeleteId(tx.id)}
-                          aria-label="Excluir"
+                          aria-label={`Excluir transação de ${formatDateBR(tx.occurred_on)}${tx.description ? `: ${tx.description}` : ""}`}
+                          className="h-10 w-10 p-0"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -318,9 +320,15 @@ function TransactionForm({
       </DialogHeader>
 
       <form action={formAction} className="space-y-4">
-        <div className="grid grid-cols-2 gap-2">
+        <div
+          role="radiogroup"
+          aria-label="Tipo da transação"
+          className="grid grid-cols-2 gap-2"
+        >
           <button
             type="button"
+            role="radio"
+            aria-checked={type === "expense"}
             onClick={() => setType("expense")}
             className={`rounded-md border px-3 py-2 text-sm font-medium transition ${
               type === "expense"
@@ -332,6 +340,8 @@ function TransactionForm({
           </button>
           <button
             type="button"
+            role="radio"
+            aria-checked={type === "income"}
             onClick={() => setType("income")}
             className={`rounded-md border px-3 py-2 text-sm font-medium transition ${
               type === "income"
@@ -350,11 +360,14 @@ function TransactionForm({
             id="amount"
             name="amount"
             type="number"
+            inputMode="decimal"
             step="0.01"
             min="0.01"
             required
             defaultValue={editing?.amount ?? ""}
-            placeholder="0,00"
+            placeholder="0.00"
+            autoComplete="off"
+            aria-describedby={formState?.error ? "tx-form-error" : undefined}
           />
         </div>
 
@@ -392,13 +405,22 @@ function TransactionForm({
             id="description"
             name="description"
             type="text"
+            maxLength={120}
             defaultValue={editing?.description ?? ""}
             placeholder="Ex: Almoço, Salário, Uber..."
+            autoComplete="off"
           />
         </div>
 
         {formState?.error && (
-          <p className="text-sm text-destructive">{formState.error}</p>
+          <p
+            id="tx-form-error"
+            role="alert"
+            aria-live="polite"
+            className="text-sm text-destructive"
+          >
+            {formState.error}
+          </p>
         )}
 
         <DialogFooter>

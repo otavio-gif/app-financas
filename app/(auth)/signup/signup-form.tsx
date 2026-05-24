@@ -23,6 +23,7 @@ export function SignupForm() {
           type="email"
           required
           autoComplete="email"
+          autoFocus
         />
       </div>
       <div className="space-y-1.5">
@@ -34,14 +35,25 @@ export function SignupForm() {
           required
           minLength={6}
           autoComplete="new-password"
+          aria-describedby="password-hint"
         />
-        <p className="text-xs text-muted-foreground">Mínimo 6 caracteres.</p>
+        <p id="password-hint" className="text-xs text-muted-foreground">
+          Mínimo 6 caracteres.
+        </p>
       </div>
       {state?.error && (
-        <p className="text-sm text-destructive">{state.error}</p>
+        <p
+          role="alert"
+          aria-live="polite"
+          className="text-sm text-destructive"
+        >
+          {state.error}
+        </p>
       )}
       {state?.message && (
-        <p className="text-sm text-foreground">{state.message}</p>
+        <p role="status" aria-live="polite" className="text-sm text-foreground">
+          {state.message}
+        </p>
       )}
       <Button type="submit" className="w-full" disabled={pending}>
         {pending ? "Cadastrando..." : "Criar conta"}

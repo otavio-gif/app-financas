@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { logout } from "../(auth)/actions";
+import { AppNav } from "@/components/app-nav";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 
@@ -24,26 +25,7 @@ export default async function AppLayout({
             <Link href="/dashboard" className="font-semibold tracking-tight">
               App Finanças
             </Link>
-            <nav className="flex items-center gap-4 text-sm">
-              <Link
-                href="/dashboard"
-                className="text-muted-foreground transition hover:text-foreground"
-              >
-                Dashboard
-              </Link>
-              <Link
-                href="/transactions"
-                className="text-muted-foreground transition hover:text-foreground"
-              >
-                Transações
-              </Link>
-              <Link
-                href="/categories"
-                className="text-muted-foreground transition hover:text-foreground"
-              >
-                Categorias
-              </Link>
-            </nav>
+            <AppNav />
           </div>
           <div className="flex items-center gap-2">
             <span className="hidden text-sm text-muted-foreground sm:inline">
