@@ -40,3 +40,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Claude Code local settings + agent skills (use skills-lock.json + skills add to restore)
+.claude/settings.local.json
+.claude/skills/
+.agents/skills/
