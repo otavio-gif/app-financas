@@ -15,6 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { Database } from "@/lib/supabase/database.types";
+import { currencyBRL, formatDateBR, todayISO } from "@/lib/format";
 import {
   createTransaction,
   deleteTransaction,
@@ -24,24 +25,6 @@ import {
 
 type Category = Database["public"]["Tables"]["categories"]["Row"];
 type Transaction = Database["public"]["Tables"]["transactions"]["Row"];
-
-const currencyFormatter = new Intl.NumberFormat("pt-BR", {
-  style: "currency",
-  currency: "BRL",
-});
-
-function formatDate(yyyyMmDd: string) {
-  const [y, m, d] = yyyyMmDd.split("-").map(Number);
-  return new Date(y, m - 1, d).toLocaleDateString("pt-BR");
-}
-
-function todayISO() {
-  const now = new Date();
-  const y = now.getFullYear();
-  const m = String(now.getMonth() + 1).padStart(2, "0");
-  const d = String(now.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
-}
 
 interface TransactionsViewProps {
   transactions: Transaction[];
@@ -109,7 +92,7 @@ export function TransactionsView({
                 const isIncome = tx.type === "income";
                 return (
                   <tr key={tx.id} className="border-t">
-                    <td className="px-4 py-3">{formatDate(tx.occurred_on)}</td>
+                    <td className="px-4 py-3">{formatDateBR(tx.occurred_on)}</td>
                     <td className="px-4 py-3">
                       {tx.description ?? (
                         <span className="text-muted-foreground">—</span>
@@ -136,7 +119,7 @@ export function TransactionsView({
                       }`}
                     >
                       {isIncome ? "+" : "−"}
-                      {currencyFormatter.format(Number(tx.amount))}
+                      {currencyBRL.format(Number(tx.amount))}
                     </td>
                     <td className="px-4 py-3 text-right">
                       <div className="inline-flex gap-1">
