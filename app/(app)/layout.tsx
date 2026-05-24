@@ -19,9 +19,25 @@ export default async function AppLayout({
     <div className="flex min-h-full flex-1 flex-col">
       <header className="border-b">
         <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
-          <Link href="/dashboard" className="font-semibold tracking-tight">
-            App Finanças
-          </Link>
+          <div className="flex items-center gap-6">
+            <Link href="/dashboard" className="font-semibold tracking-tight">
+              App Finanças
+            </Link>
+            <nav className="flex items-center gap-4 text-sm">
+              <Link
+                href="/dashboard"
+                className="text-muted-foreground transition hover:text-foreground"
+              >
+                Dashboard
+              </Link>
+              <Link
+                href="/transactions"
+                className="text-muted-foreground transition hover:text-foreground"
+              >
+                Transações
+              </Link>
+            </nav>
+          </div>
           <div className="flex items-center gap-3">
             <span className="hidden text-sm text-muted-foreground sm:inline">
               {user.email}
