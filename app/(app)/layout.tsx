@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { logout } from "../(auth)/actions";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default async function AppLayout({
   children,
@@ -44,10 +45,11 @@ export default async function AppLayout({
               </Link>
             </nav>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <span className="hidden text-sm text-muted-foreground sm:inline">
               {user.email}
             </span>
+            <ThemeToggle />
             <form action={logout}>
               <Button type="submit" variant="outline" size="sm">
                 Sair
