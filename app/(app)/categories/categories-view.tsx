@@ -71,17 +71,19 @@ export function CategoriesView({ categories, usage }: CategoriesViewProps) {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Categorias</h1>
-        <p className="text-sm text-muted-foreground">
-          Organize suas receitas e despesas
+    <div className="space-y-10">
+      <header className="space-y-2 border-b border-border pb-4">
+        <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+          Taxonomia
         </p>
-      </div>
+        <h1 className="font-heading text-4xl font-light leading-none tracking-tight md:text-5xl">
+          Categorias
+        </h1>
+      </header>
 
       <CategorySection
         title="Despesas"
-        accent="text-rose-600"
+        accent="text-[color:var(--expense)]"
         categories={expenses}
         usage={usage}
         onCreate={() => setDialogState({ mode: "create", type: "expense" })}
@@ -91,7 +93,7 @@ export function CategoriesView({ categories, usage }: CategoriesViewProps) {
 
       <CategorySection
         title="Receitas"
-        accent="text-emerald-600"
+        accent="text-[color:var(--income)]"
         categories={incomes}
         usage={usage}
         onCreate={() => setDialogState({ mode: "create", type: "income" })}
@@ -174,33 +176,39 @@ function CategorySection({
   onDelete,
 }: CategorySectionProps) {
   return (
-    <section className="space-y-3">
-      <div className="flex items-center justify-between">
-        <h2 className={`text-lg font-semibold ${accent}`}>{title}</h2>
+    <section className="space-y-4">
+      <div className="flex items-center justify-between border-b border-border pb-2">
+        <h2
+          className={`font-heading text-xl font-medium tracking-tight ${accent}`}
+        >
+          {title}
+        </h2>
         <Button size="sm" variant="outline" onClick={onCreate}>
           <Plus className="h-4 w-4" />
           Adicionar
         </Button>
       </div>
       {categories.length === 0 ? (
-        <p className="rounded-md border border-dashed py-8 text-center text-sm text-muted-foreground">
+        <p className="border-y border-dashed border-border py-8 text-center text-sm text-muted-foreground">
           Nenhuma categoria.
         </p>
       ) : (
-        <ul className="grid gap-2 sm:grid-cols-2">
+        <ul className="grid gap-x-8 sm:grid-cols-2">
           {categories.map((c) => (
             <li
               key={c.id}
-              className="flex items-center gap-3 rounded-lg border p-3"
+              className="flex items-center gap-3 border-b border-border py-3"
             >
               <span
-                className="h-8 w-8 shrink-0 rounded-full"
+                className="h-6 w-6 shrink-0 rounded-full"
                 style={{ backgroundColor: c.color }}
+                aria-hidden="true"
               />
               <div className="min-w-0 flex-1">
                 <p className="truncate font-medium">{c.name}</p>
-                <p className="text-xs text-muted-foreground">
-                  {usage[c.id] ?? 0} transações
+                <p className="font-mono text-xs text-muted-foreground tabular-nums">
+                  {usage[c.id] ?? 0}{" "}
+                  {(usage[c.id] ?? 0) === 1 ? "transação" : "transações"}
                 </p>
               </div>
               <div className="flex gap-2">

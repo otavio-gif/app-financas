@@ -16,16 +16,17 @@ export default async function AppLayout({
 
   return (
     <div className="flex min-h-full flex-1 flex-col">
-      <header className="border-b">
-        <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
-          <div className="flex items-center gap-6">
-            <Link href="/dashboard" className="font-semibold tracking-tight">
-              App Finanças
-            </Link>
-            <AppNav />
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="hidden text-sm text-muted-foreground sm:inline">
+      <header className="border-b border-border">
+        <div className="mx-auto flex h-16 max-w-5xl items-center justify-between gap-6 px-6">
+          <Link
+            href="/dashboard"
+            className="font-heading text-xl font-medium tracking-tight"
+          >
+            App Finanças
+          </Link>
+          <AppNav />
+          <div className="ml-auto flex items-center gap-2">
+            <span className="hidden font-mono text-xs text-muted-foreground sm:inline">
               {user.email}
             </span>
             <ThemeToggle />
@@ -37,7 +38,7 @@ export default async function AppLayout({
           </div>
         </div>
       </header>
-      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6">
+      <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-10">
         {children}
       </main>
     </div>

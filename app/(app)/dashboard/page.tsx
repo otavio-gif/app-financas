@@ -1,13 +1,6 @@
 import Link from "next/link";
-import { ArrowRight, TrendingDown, TrendingUp, Wallet } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { currencyBRL, formatDateBR } from "@/lib/format";
 import type { Database } from "@/lib/supabase/database.types";
 import { DashboardCharts } from "./charts-loader";
@@ -56,146 +49,157 @@ export default async function DashboardPage() {
     income: 0,
     expense: 0,
   };
+  const prevMonth = monthlyTrend[monthlyTrend.length - 2];
   const monthIncome = currentMonth.income;
   const monthExpense = currentMonth.expense;
   const balance = monthIncome - monthExpense;
+
+  const prevBalance = prevMonth ? prevMonth.income - prevMonth.expense : null;
+  const balanceDelta =
+    prevBalance !== null && prevBalance !== 0
+      ? ((balance - prevBalance) / Math.abs(prevBalance)) * 100
+      : null;
 
   const expenseByCategory = (byCatRows ?? []).map((row) => {
     const cat = row.category_id ? categoriesById.get(row.category_id) : null;
     return {
       name: cat?.name ?? "Sem categoria",
-      color: cat?.color ?? "#94a3b8",
+      color: cat?.color ?? "var(--muted-foreground)",
       total: Number(row.total),
     };
   });
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
-        <p className="text-sm text-muted-foreground">
-          Resumo de {capitalizedMonth(now)} {now.getFullYear()}
+    <div className="space-y-10">
+      <header className="space-y-2 border-b border-border pb-6">
+        <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+          {capitalizedMonth(now)} {now.getFullYear()}
         </p>
-      </div>
+        <h1 className="font-heading text-5xl font-light leading-none tracking-tight md:text-6xl">
+          Resumo
+        </h1>
+      </header>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <SummaryCard
-          title="Saldo do mês"
+      <section className="grid gap-x-12 gap-y-8 md:grid-cols-3">
+        <Stat
+          label="Saldo do mês"
           value={balance}
-          icon={<Wallet className="h-4 w-4" />}
           tone={balance >= 0 ? "positive" : "negative"}
+          delta={balanceDelta}
         />
-        <SummaryCard
-          title="Receitas"
+        <Stat
+          label="Receitas"
           value={monthIncome}
-          icon={<TrendingUp className="h-4 w-4" />}
           tone="positive"
         />
-        <SummaryCard
-          title="Despesas"
+        <Stat
+          label="Despesas"
           value={monthExpense}
-          icon={<TrendingDown className="h-4 w-4" />}
           tone="negative"
         />
-      </div>
+      </section>
 
       <DashboardCharts
         expenseByCategory={expenseByCategory}
         monthlyTrend={monthlyTrend}
       />
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Últimas transações</CardTitle>
-          <CardDescription>
-            <Link
-              href="/transactions"
-              className="inline-flex items-center gap-1 text-sm hover:text-foreground"
-            >
-              Ver todas <ArrowRight className="h-3 w-3" />
-            </Link>
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {!recent || recent.length === 0 ? (
-            <p className="py-6 text-center text-sm text-muted-foreground">
-              Nenhuma transação ainda.
-            </p>
-          ) : (
-            <ul className="divide-y">
-              {recent.map((tx) => {
-                const cat = tx.category_id
-                  ? categoriesById.get(tx.category_id)
-                  : null;
-                const isIncome = tx.type === "income";
-                return (
-                  <li key={tx.id} className="flex items-center gap-3 py-3">
-                    <span
-                      className="h-8 w-8 shrink-0 rounded-full"
-                      style={{ backgroundColor: cat?.color ?? "#94a3b8" }}
-                    />
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium">
-                        {tx.description ?? cat?.name ?? "Sem descrição"}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {cat?.name ?? "Sem categoria"} ·{" "}
-                        {formatDateBR(tx.occurred_on)}
-                      </p>
-                    </div>
-                    <span
-                      className={`shrink-0 text-sm font-medium tabular-nums ${
-                        isIncome
-                          ? "text-emerald-700 dark:text-emerald-400"
-                          : "text-rose-700 dark:text-rose-400"
-                      }`}
-                    >
-                      {isIncome ? "+" : "−"}
-                      {currencyBRL.format(Number(tx.amount))}
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </CardContent>
-      </Card>
+      <section className="space-y-4 border-t border-border pt-6">
+        <div className="flex items-baseline justify-between">
+          <h2 className="font-heading text-2xl font-medium tracking-tight">
+            Últimas transações
+          </h2>
+          <Link
+            href="/transactions"
+            className="inline-flex items-center gap-1 text-xs uppercase tracking-[0.14em] text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+          >
+            Ver todas <ArrowRight className="h-3 w-3" />
+          </Link>
+        </div>
+
+        {!recent || recent.length === 0 ? (
+          <p className="py-8 text-center text-sm text-muted-foreground">
+            Nenhuma transação ainda.
+          </p>
+        ) : (
+          <ul className="divide-y divide-border">
+            {recent.map((tx) => {
+              const cat = tx.category_id
+                ? categoriesById.get(tx.category_id)
+                : null;
+              const isIncome = tx.type === "income";
+              return (
+                <li
+                  key={tx.id}
+                  className="grid grid-cols-[1fr_auto] items-baseline gap-4 py-3"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium">
+                      {tx.description ?? cat?.name ?? "Sem descrição"}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      <span
+                        className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full align-middle"
+                        style={{
+                          backgroundColor: cat?.color ?? "var(--muted-foreground)",
+                        }}
+                      />
+                      {cat?.name ?? "Sem categoria"} ·{" "}
+                      <time>{formatDateBR(tx.occurred_on)}</time>
+                    </p>
+                  </div>
+                  <span
+                    className={`font-mono text-sm tabular-nums ${
+                      isIncome ? "text-[color:var(--income)]" : "text-[color:var(--expense)]"
+                    }`}
+                  >
+                    {isIncome ? "+" : "−"}
+                    {currencyBRL.format(Number(tx.amount))}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </section>
     </div>
   );
 }
 
-function SummaryCard({
-  title,
+function Stat({
+  label,
   value,
-  icon,
   tone,
+  delta,
 }: {
-  title: string;
+  label: string;
   value: number;
-  icon: React.ReactNode;
   tone: "positive" | "negative" | "neutral";
+  delta?: number | null;
 }) {
-  const toneClass =
+  const toneColor =
     tone === "positive"
-      ? "text-emerald-700 dark:text-emerald-400"
+      ? "text-[color:var(--income)]"
       : tone === "negative"
-        ? "text-rose-700 dark:text-rose-400"
+        ? "text-[color:var(--expense)]"
         : "text-foreground";
 
+  const deltaSign = delta !== null && delta !== undefined && delta > 0 ? "+" : "";
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between text-sm font-medium text-muted-foreground">
-          {title}
-          <span className="text-muted-foreground">{icon}</span>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p className={`text-2xl font-semibold tabular-nums ${toneClass}`}>
-          {currencyBRL.format(value)}
+    <div className="space-y-2 border-l border-border pl-5 md:border-l-0 md:border-t md:pl-0 md:pt-5">
+      <p className="text-xs uppercase tracking-[0.14em] text-muted-foreground">
+        {label}
+      </p>
+      <p className={`font-mono text-3xl font-medium tabular-nums ${toneColor}`}>
+        {currencyBRL.format(value)}
+      </p>
+      {delta !== null && delta !== undefined && (
+        <p className="font-mono text-xs text-muted-foreground tabular-nums">
+          {deltaSign}{delta.toFixed(1)}% vs mês anterior
         </p>
-      </CardContent>
-    </Card>
+      )}
+    </div>
   );
 }
 

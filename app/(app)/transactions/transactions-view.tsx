@@ -93,37 +93,44 @@ export function TransactionsView({
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold tracking-tight">Transações</h1>
+    <div className="space-y-8">
+      <header className="flex items-end justify-between gap-4 border-b border-border pb-4">
+        <div className="space-y-2">
+          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+            Movimentações
+          </p>
+          <h1 className="font-heading text-4xl font-light leading-none tracking-tight md:text-5xl">
+            Transações
+          </h1>
+        </div>
         <Button onClick={() => setDialogState({ mode: "create" })}>
           <Plus className="h-4 w-4" />
           Nova transação
         </Button>
-      </div>
+      </header>
 
       <TransactionsFilters categories={categories} initial={filters} />
 
-      <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-        <span>
-          <span className="font-medium text-foreground">
+      <div className="flex flex-wrap items-baseline gap-x-8 gap-y-2 border-b border-border pb-4 text-sm">
+        <span className="text-muted-foreground">
+          <span className="font-mono text-foreground tabular-nums">
             {transactions.length}
           </span>{" "}
           {transactions.length === 1 ? "transação" : "transações"}
         </span>
-        <span className="text-emerald-700 dark:text-emerald-400">
+        <span className="font-mono tabular-nums text-[color:var(--income)]">
           + {currencyBRL.format(totalIncome)}
         </span>
-        <span className="text-rose-700 dark:text-rose-400">
+        <span className="font-mono tabular-nums text-[color:var(--expense)]">
           − {currencyBRL.format(totalExpense)}
         </span>
-        <span className="ml-auto">
-          Saldo:{" "}
+        <span className="ml-auto text-muted-foreground">
+          Saldo{" "}
           <span
-            className={`font-medium tabular-nums ${
+            className={`font-mono tabular-nums ${
               totalIncome - totalExpense >= 0
-                ? "text-emerald-700 dark:text-emerald-400"
-                : "text-rose-700 dark:text-rose-400"
+                ? "text-[color:var(--income)]"
+                : "text-[color:var(--expense)]"
             }`}
           >
             {currencyBRL.format(totalIncome - totalExpense)}
@@ -132,7 +139,7 @@ export function TransactionsView({
       </div>
 
       {transactions.length === 0 ? (
-        <div className="rounded-lg border border-dashed py-16 text-center">
+        <div className="border-y border-dashed border-border py-16 text-center">
           {filters.month || filters.type || filters.category || filters.q ? (
             <p className="text-muted-foreground">
               Nenhuma transação encontrada para esses filtros.
@@ -147,84 +154,84 @@ export function TransactionsView({
           )}
         </div>
       ) : (
-        <div className="overflow-hidden rounded-lg border">
-          <table className="w-full text-sm">
-            <thead className="bg-muted/50 text-muted-foreground">
-              <tr>
-                <th className="px-4 py-2 text-left font-medium">Data</th>
-                <th className="px-4 py-2 text-left font-medium">Descrição</th>
-                <th className="px-4 py-2 text-left font-medium">Categoria</th>
-                <th className="px-4 py-2 text-right font-medium">Valor</th>
-                <th className="px-4 py-2 text-right font-medium">Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {transactions.map((tx) => {
-                const category = tx.category_id
-                  ? categoriesById.get(tx.category_id)
-                  : undefined;
-                const isIncome = tx.type === "income";
-                return (
-                  <tr key={tx.id} className="border-t">
-                    <td className="px-4 py-3">{formatDateBR(tx.occurred_on)}</td>
-                    <td className="px-4 py-3">
-                      {tx.description ?? (
-                        <span className="text-muted-foreground">—</span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3">
-                      {category ? (
-                        <span className="inline-flex items-center gap-2">
-                          <span
-                            className="inline-block h-2 w-2 rounded-full"
-                            style={{ backgroundColor: category.color }}
-                          />
-                          {category.name}
-                        </span>
-                      ) : (
-                        <span className="text-muted-foreground">
-                          Sem categoria
-                        </span>
-                      )}
-                    </td>
-                    <td
-                      className={`px-4 py-3 text-right font-medium tabular-nums ${
-                        isIncome
-                          ? "text-emerald-700 dark:text-emerald-400"
-                          : "text-rose-700 dark:text-rose-400"
-                      }`}
-                    >
-                      {isIncome ? "+" : "−"}
-                      {currencyBRL.format(Number(tx.amount))}
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <div className="inline-flex gap-2">
-                        <Button
-                          variant="ghost"
-                          onClick={() =>
-                            setDialogState({ mode: "edit", transaction: tx })
-                          }
-                          aria-label={`Editar transação de ${formatDateBR(tx.occurred_on)}${tx.description ? `: ${tx.description}` : ""}`}
-                          className="h-10 w-10 p-0"
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          onClick={() => setDeleteId(tx.id)}
-                          aria-label={`Excluir transação de ${formatDateBR(tx.occurred_on)}${tx.description ? `: ${tx.description}` : ""}`}
-                          className="h-10 w-10 p-0"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+        <table className="w-full text-sm">
+          <thead className="border-b border-border">
+            <tr className="text-xs uppercase tracking-[0.12em] text-muted-foreground">
+              <th className="py-2 pr-4 text-left font-medium">Data</th>
+              <th className="px-4 py-2 text-left font-medium">Descrição</th>
+              <th className="px-4 py-2 text-left font-medium">Categoria</th>
+              <th className="px-4 py-2 text-right font-medium">Valor</th>
+              <th className="py-2 pl-4 text-right font-medium">
+                <span className="sr-only">Ações</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {transactions.map((tx) => {
+              const category = tx.category_id
+                ? categoriesById.get(tx.category_id)
+                : undefined;
+              const isIncome = tx.type === "income";
+              return (
+                <tr key={tx.id} className="border-b border-border last:border-b-0">
+                  <td className="py-3 pr-4 font-mono text-xs text-muted-foreground tabular-nums">
+                    {formatDateBR(tx.occurred_on)}
+                  </td>
+                  <td className="px-4 py-3">
+                    {tx.description ?? (
+                      <span className="text-muted-foreground">—</span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    {category ? (
+                      <span className="inline-flex items-center gap-2">
+                        <span
+                          className="inline-block h-1.5 w-1.5 rounded-full"
+                          style={{ backgroundColor: category.color }}
+                        />
+                        {category.name}
+                      </span>
+                    ) : (
+                      <span>Sem categoria</span>
+                    )}
+                  </td>
+                  <td
+                    className={`px-4 py-3 text-right font-mono tabular-nums ${
+                      isIncome
+                        ? "text-[color:var(--income)]"
+                        : "text-[color:var(--expense)]"
+                    }`}
+                  >
+                    {isIncome ? "+" : "−"}
+                    {currencyBRL.format(Number(tx.amount))}
+                  </td>
+                  <td className="py-3 pl-4 text-right">
+                    <div className="inline-flex gap-1">
+                      <Button
+                        variant="ghost"
+                        onClick={() =>
+                          setDialogState({ mode: "edit", transaction: tx })
+                        }
+                        aria-label={`Editar transação de ${formatDateBR(tx.occurred_on)}${tx.description ? `: ${tx.description}` : ""}`}
+                        className="h-10 w-10 p-0"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        onClick={() => setDeleteId(tx.id)}
+                        aria-label={`Excluir transação de ${formatDateBR(tx.occurred_on)}${tx.description ? `: ${tx.description}` : ""}`}
+                        className="h-10 w-10 p-0"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       )}
 
       {(page > 1 || hasNext) && (

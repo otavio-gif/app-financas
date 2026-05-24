@@ -7,9 +7,9 @@ export const DashboardCharts = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="grid gap-4 lg:grid-cols-2">
-        <div className="h-[380px] animate-pulse rounded-xl border bg-card" />
-        <div className="h-[380px] animate-pulse rounded-xl border bg-card" />
+      <div className="grid gap-8 border-y border-border py-6 lg:grid-cols-2">
+        <div className="h-[320px] animate-pulse rounded-sm bg-muted/40" />
+        <div className="h-[320px] animate-pulse rounded-sm bg-muted/40" />
       </div>
     ),
   },
