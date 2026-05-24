@@ -118,7 +118,30 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      category_usage_counts: {
+        Args: never
+        Returns: {
+          category_id: string
+          count: number
+        }[]
+      }
+      current_month_expense_by_category: {
+        Args: never
+        Returns: {
+          category_id: string
+          total: number
+        }[]
+      }
+      monthly_totals: {
+        Args: { p_months: number }
+        Returns: {
+          expense: number
+          income: number
+          month_start: string
+        }[]
+      }
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { "": string }; Returns: string[] }
     }
     Enums: {
       [_ in never]: never

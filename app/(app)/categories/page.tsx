@@ -8,19 +8,13 @@ export default async function CategoriesPage() {
 
   const [{ data: categories }, { data: usageRows }] = await Promise.all([
     supabase.from("categories").select("*").order("name"),
-    supabase.from("transactions").select("category_id"),
+    supabase.rpc("category_usage_counts"),
   ]);
 
-  const usage = new Map<string, number>();
+  const usage: Record<string, number> = {};
   for (const row of usageRows ?? []) {
-    if (!row.category_id) continue;
-    usage.set(row.category_id, (usage.get(row.category_id) ?? 0) + 1);
+    if (row.category_id) usage[row.category_id] = Number(row.count);
   }
 
-  return (
-    <CategoriesView
-      categories={categories ?? []}
-      usage={Object.fromEntries(usage)}
-    />
-  );
+  return <CategoriesView categories={categories ?? []} usage={usage} />;
 }

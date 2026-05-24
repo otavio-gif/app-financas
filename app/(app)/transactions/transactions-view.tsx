@@ -1,7 +1,8 @@
 "use client";
 
 import { useActionState, useEffect, useMemo, useState, useTransition } from "react";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import Link from "next/link";
+import { ChevronLeft, ChevronRight, Pencil, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -41,12 +42,27 @@ interface TransactionsViewProps {
   transactions: Transaction[];
   categories: Category[];
   filters: Filters;
+  page: number;
+  hasNext: boolean;
+}
+
+function buildPageHref(filters: Filters, page: number): string {
+  const sp = new URLSearchParams();
+  if (filters.month) sp.set("month", filters.month);
+  if (filters.type) sp.set("type", filters.type);
+  if (filters.category) sp.set("category", filters.category);
+  if (filters.q) sp.set("q", filters.q);
+  if (page > 1) sp.set("page", String(page));
+  const qs = sp.toString();
+  return qs ? `/transactions?${qs}` : "/transactions";
 }
 
 export function TransactionsView({
   transactions,
   categories,
   filters,
+  page,
+  hasNext,
 }: TransactionsViewProps) {
   const [dialogState, setDialogState] = useState<
     { mode: "create" } | { mode: "edit"; transaction: Transaction } | null
@@ -208,6 +224,40 @@ export function TransactionsView({
               })}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {(page > 1 || hasNext) && (
+        <div className="flex items-center justify-between text-sm">
+          <span className="text-muted-foreground">Página {page}</span>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={page <= 1}
+              render={
+                page <= 1 ? undefined : (
+                  <Link href={buildPageHref(filters, page - 1)} />
+                )
+              }
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Anterior
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={!hasNext}
+              render={
+                !hasNext ? undefined : (
+                  <Link href={buildPageHref(filters, page + 1)} />
+                )
+              }
+            >
+              Próxima
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       )}
 
