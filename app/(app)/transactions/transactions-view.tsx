@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useMemo, useState, useTransition } from "react";
+import { useActionState, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Pencil, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,14 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { PageHeader } from "@/components/page-header";
 import type { Database } from "@/lib/supabase/database.types";
 import { currencyBRL, formatDateBR, todayISO } from "@/lib/format";
 import {
@@ -94,20 +102,17 @@ export function TransactionsView({
 
   return (
     <div className="space-y-8">
-      <header className="flex items-end justify-between gap-4 border-b border-border pb-4">
-        <div className="space-y-2">
-          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
-            Movimentações
-          </p>
-          <h1 className="font-heading text-4xl font-light leading-none tracking-tight md:text-5xl">
-            Transações
-          </h1>
-        </div>
-        <Button onClick={() => setDialogState({ mode: "create" })}>
-          <Plus className="h-4 w-4" />
-          Nova transação
-        </Button>
-      </header>
+      <PageHeader
+        overline="Movimentações"
+        title="Transações"
+        size="md"
+        action={
+          <Button onClick={() => setDialogState({ mode: "create" })}>
+            <Plus className="h-4 w-4" />
+            Nova transação
+          </Button>
+        }
+      />
 
       <TransactionsFilters categories={categories} initial={filters} />
 
@@ -154,84 +159,157 @@ export function TransactionsView({
           )}
         </div>
       ) : (
-        <table className="w-full text-sm">
-          <thead className="border-b border-border">
-            <tr className="text-xs uppercase tracking-[0.12em] text-muted-foreground">
-              <th className="py-2 pr-4 text-left font-medium">Data</th>
-              <th className="px-4 py-2 text-left font-medium">Descrição</th>
-              <th className="px-4 py-2 text-left font-medium">Categoria</th>
-              <th className="px-4 py-2 text-right font-medium">Valor</th>
-              <th className="py-2 pl-4 text-right font-medium">
-                <span className="sr-only">Ações</span>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
+        <>
+          {/* Mobile: card-list */}
+          <ul className="divide-y divide-border border-y border-border md:hidden">
             {transactions.map((tx) => {
               const category = tx.category_id
                 ? categoriesById.get(tx.category_id)
                 : undefined;
               const isIncome = tx.type === "income";
               return (
-                <tr key={tx.id} className="border-b border-border last:border-b-0">
-                  <td className="py-3 pr-4 font-mono text-xs text-muted-foreground tabular-nums">
-                    {formatDateBR(tx.occurred_on)}
-                  </td>
-                  <td className="px-4 py-3">
-                    {tx.description ?? (
-                      <span className="text-muted-foreground">—</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-muted-foreground">
-                    {category ? (
-                      <span className="inline-flex items-center gap-2">
-                        <span
-                          className="inline-block h-1.5 w-1.5 rounded-full"
-                          style={{ backgroundColor: category.color }}
-                        />
-                        {category.name}
-                      </span>
-                    ) : (
-                      <span>Sem categoria</span>
-                    )}
-                  </td>
-                  <td
-                    className={`px-4 py-3 text-right font-mono tabular-nums ${
-                      isIncome
-                        ? "text-[color:var(--income)]"
-                        : "text-[color:var(--expense)]"
-                    }`}
-                  >
-                    {isIncome ? "+" : "−"}
-                    {currencyBRL.format(Number(tx.amount))}
-                  </td>
-                  <td className="py-3 pl-4 text-right">
-                    <div className="inline-flex gap-1">
-                      <Button
-                        variant="ghost"
-                        onClick={() =>
-                          setDialogState({ mode: "edit", transaction: tx })
-                        }
-                        aria-label={`Editar transação de ${formatDateBR(tx.occurred_on)}${tx.description ? `: ${tx.description}` : ""}`}
-                        className="h-10 w-10 p-0"
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        onClick={() => setDeleteId(tx.id)}
-                        aria-label={`Excluir transação de ${formatDateBR(tx.occurred_on)}${tx.description ? `: ${tx.description}` : ""}`}
-                        className="h-10 w-10 p-0"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                <li key={tx.id} className="py-3">
+                  <div className="grid grid-cols-[1fr_auto] items-baseline gap-3">
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold">
+                        {tx.description ?? (
+                          <span className="text-muted-foreground">Sem descrição</span>
+                        )}
+                      </p>
+                      <p className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-muted-foreground">
+                        <span className="inline-flex items-center gap-1.5">
+                          {category && (
+                            <span
+                              aria-hidden="true"
+                              className="inline-block h-1.5 w-1.5 rounded-full"
+                              style={{ backgroundColor: category.color }}
+                            />
+                          )}
+                          {category?.name ?? "Sem categoria"}
+                        </span>
+                        <span aria-hidden="true">·</span>
+                        <time className="font-mono tabular-nums">
+                          {formatDateBR(tx.occurred_on)}
+                        </time>
+                      </p>
                     </div>
-                  </td>
-                </tr>
+                    <span
+                      className={`font-mono text-sm tabular-nums ${
+                        isIncome
+                          ? "text-[color:var(--income)]"
+                          : "text-[color:var(--expense)]"
+                      }`}
+                    >
+                      {isIncome ? "+" : "−"}
+                      {currencyBRL.format(Number(tx.amount))}
+                    </span>
+                  </div>
+                  <div className="mt-2 flex justify-end gap-1">
+                    <Button
+                      variant="ghost"
+                      onClick={() =>
+                        setDialogState({ mode: "edit", transaction: tx })
+                      }
+                      aria-label={`Editar transação de ${formatDateBR(tx.occurred_on)}${tx.description ? `: ${tx.description}` : ""}`}
+                      className="h-11 w-11 p-0"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      onClick={() => setDeleteId(tx.id)}
+                      aria-label={`Excluir transação de ${formatDateBR(tx.occurred_on)}${tx.description ? `: ${tx.description}` : ""}`}
+                      className="h-11 w-11 p-0"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </li>
               );
             })}
-          </tbody>
-        </table>
+          </ul>
+
+          {/* Desktop: table */}
+          <table className="hidden w-full text-sm md:table">
+            <thead className="border-b border-border">
+              <tr className="text-xs uppercase tracking-[0.12em] text-muted-foreground">
+                <th className="py-2 pr-4 text-left font-semibold">Data</th>
+                <th className="px-4 py-2 text-left font-semibold">Descrição</th>
+                <th className="px-4 py-2 text-left font-semibold">Categoria</th>
+                <th className="px-4 py-2 text-right font-semibold">Valor</th>
+                <th className="py-2 pl-4 text-right font-semibold">
+                  <span className="sr-only">Ações</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {transactions.map((tx) => {
+                const category = tx.category_id
+                  ? categoriesById.get(tx.category_id)
+                  : undefined;
+                const isIncome = tx.type === "income";
+                return (
+                  <tr key={tx.id} className="border-b border-border last:border-b-0">
+                    <td className="py-3 pr-4 font-mono text-xs text-muted-foreground tabular-nums">
+                      {formatDateBR(tx.occurred_on)}
+                    </td>
+                    <td className="px-4 py-3">
+                      {tx.description ?? (
+                        <span className="text-muted-foreground">—</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-muted-foreground">
+                      {category ? (
+                        <span className="inline-flex items-center gap-2">
+                          <span
+                            aria-hidden="true"
+                            className="inline-block h-1.5 w-1.5 rounded-full"
+                            style={{ backgroundColor: category.color }}
+                          />
+                          {category.name}
+                        </span>
+                      ) : (
+                        <span>Sem categoria</span>
+                      )}
+                    </td>
+                    <td
+                      className={`px-4 py-3 text-right font-mono tabular-nums ${
+                        isIncome
+                          ? "text-[color:var(--income)]"
+                          : "text-[color:var(--expense)]"
+                      }`}
+                    >
+                      {isIncome ? "+" : "−"}
+                      {currencyBRL.format(Number(tx.amount))}
+                    </td>
+                    <td className="py-3 pl-4 text-right">
+                      <div className="inline-flex gap-1">
+                        <Button
+                          variant="ghost"
+                          onClick={() =>
+                            setDialogState({ mode: "edit", transaction: tx })
+                          }
+                          aria-label={`Editar transação de ${formatDateBR(tx.occurred_on)}${tx.description ? `: ${tx.description}` : ""}`}
+                          className="h-10 w-10 p-0"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          onClick={() => setDeleteId(tx.id)}
+                          aria-label={`Excluir transação de ${formatDateBR(tx.occurred_on)}${tx.description ? `: ${tx.description}` : ""}`}
+                          className="h-10 w-10 p-0"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </>
       )}
 
       {(page > 1 || hasNext) && (
@@ -240,7 +318,6 @@ export function TransactionsView({
           <div className="flex gap-2">
             <Button
               variant="outline"
-              size="sm"
               disabled={page <= 1}
               render={
                 page <= 1 ? undefined : (
@@ -253,7 +330,6 @@ export function TransactionsView({
             </Button>
             <Button
               variant="outline"
-              size="sm"
               disabled={!hasNext}
               render={
                 !hasNext ? undefined : (
@@ -355,11 +431,17 @@ function TransactionForm({
     (editing?.type as "income" | "expense") ?? "expense",
   );
 
+  const amountRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     if (formState?.message) {
       onSuccess();
     }
   }, [formState, onSuccess]);
+
+  useEffect(() => {
+    if (formState?.error) amountRef.current?.focus();
+  }, [formState?.error]);
 
   const filteredCategories = categories.filter((c) => c.type === type);
 
@@ -387,9 +469,9 @@ function TransactionForm({
             role="radio"
             aria-checked={type === "expense"}
             onClick={() => setType("expense")}
-            className={`rounded-md border px-3 py-2 text-sm font-medium transition ${
+            className={`rounded-lg border px-3 py-2 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/60 ${
               type === "expense"
-                ? "border-rose-500 bg-rose-50 text-rose-700 dark:bg-rose-950 dark:text-rose-300"
+                ? "border-[color:var(--expense)] bg-[color:var(--expense)]/10 text-[color:var(--expense)]"
                 : "border-input text-muted-foreground hover:bg-muted"
             }`}
           >
@@ -400,9 +482,9 @@ function TransactionForm({
             role="radio"
             aria-checked={type === "income"}
             onClick={() => setType("income")}
-            className={`rounded-md border px-3 py-2 text-sm font-medium transition ${
+            className={`rounded-lg border px-3 py-2 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/60 ${
               type === "income"
-                ? "border-emerald-500 bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
+                ? "border-[color:var(--income)] bg-[color:var(--income)]/10 text-[color:var(--income)]"
                 : "border-input text-muted-foreground hover:bg-muted"
             }`}
           >
@@ -412,15 +494,19 @@ function TransactionForm({
         <input type="hidden" name="type" value={type} />
 
         <div className="space-y-1.5">
-          <Label htmlFor="amount">Valor</Label>
+          <Label htmlFor="amount">
+            Valor <span aria-hidden="true" className="text-destructive">*</span>
+          </Label>
           <Input
             id="amount"
             name="amount"
+            ref={amountRef}
             type="number"
             inputMode="decimal"
             step="0.01"
             min="0.01"
             required
+            aria-required="true"
             defaultValue={editing?.amount ?? ""}
             placeholder="0.00"
             autoComplete="off"
@@ -429,31 +515,37 @@ function TransactionForm({
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="occurred_on">Data</Label>
+          <Label htmlFor="occurred_on">
+            Data <span aria-hidden="true" className="text-destructive">*</span>
+          </Label>
           <Input
             id="occurred_on"
             name="occurred_on"
             type="date"
             required
+            aria-required="true"
             defaultValue={editing?.occurred_on ?? todayISO()}
           />
         </div>
 
         <div className="space-y-1.5">
           <Label htmlFor="category_id">Categoria</Label>
-          <select
-            id="category_id"
+          <Select
             name="category_id"
             defaultValue={editing?.category_id ?? ""}
-            className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
           >
-            <option value="">Sem categoria</option>
-            {filteredCategories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger id="category_id" className="w-full">
+              <SelectValue placeholder="Sem categoria" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="">Sem categoria</SelectItem>
+              {filteredCategories.map((c) => (
+                <SelectItem key={c.id} value={c.id}>
+                  {c.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="space-y-1.5">

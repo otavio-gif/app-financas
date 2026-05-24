@@ -4,12 +4,19 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ============================================================
+ * Soulstory Design System 2.0 — token bridge to shadcn
+ *   Parchment Canvas (#FAF8F5) ↔ Deep Indigo Void (#0C0B14)
+ *   Mr Eaves Sans OT  +  Minion 3 Pro  +  JetBrains Mono
+ * ============================================================ */
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-fraunces);
+  --font-sans: 'mr-eaves-sans', 'Mr Eaves Sans OT', 'Avenir Next', 'Avenir', 'Helvetica Neue', system-ui, Arial, sans-serif;
+  --font-serif: 'minion-3', 'Minion 3 Pro', 'Minion Pro', Garamond, Georgia, serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-heading: 'mr-eaves-sans', 'Mr Eaves Sans OT', 'Avenir Next', 'Avenir', 'Helvetica Neue', system-ui, Arial, sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -41,6 +48,18 @@
   --color-card: var(--card);
   --color-income: var(--income);
   --color-expense: var(--expense);
+
+  /* Soulstory brand swatches (exposed as Tailwind colors) */
+  --color-ss-indigo:     var(--ss-indigo);
+  --color-ss-periwinkle: var(--ss-periwinkle);
+  --color-ss-sky:        var(--ss-sky);
+  --color-ss-cream:      var(--ss-cream);
+  --color-ss-warm-veil:  var(--ss-warm-veil);
+  --color-ss-lavender:   var(--ss-lavender);
+  --color-ss-ink:        var(--ss-ink);
+  --color-ss-elevated:   var(--ss-elevated);
+  --color-ss-surface:    var(--ss-surface-indigo);
+
   --radius-sm: calc(var(--radius) * 0.4);
   --radius-md: calc(var(--radius) * 0.7);
   --radius-lg: var(--radius);
@@ -50,105 +69,185 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* ============================================================
- * Editorial / financial-newspaper palette
- *  - Warm off-white paper + deep ink
- *  - One restrained accent (moss green) for primary
- *  - Income = deep forest moss, Expense = terracotta
- *  - Hairline borders, smaller radii
- * ============================================================ */
+/* ---------- Soulstory raw brand tokens ---------- */
 :root {
-  --background:           oklch(0.985 0.008 95);    /* warm off-white */
-  --foreground:           oklch(0.18 0.012 250);    /* deep ink */
-  --card:                 oklch(1 0 0);
-  --card-foreground:      oklch(0.18 0.012 250);
-  --popover:              oklch(1 0 0);
-  --popover-foreground:   oklch(0.18 0.012 250);
-  --primary:              oklch(0.36 0.06 150);     /* deep moss */
-  --primary-foreground:   oklch(0.99 0.005 95);
-  --secondary:            oklch(0.94 0.01 90);
-  --secondary-foreground: oklch(0.22 0.012 250);
-  --muted:                oklch(0.94 0.008 90);
-  --muted-foreground:     oklch(0.46 0.015 250);
-  --accent:               oklch(0.93 0.015 90);
-  --accent-foreground:    oklch(0.22 0.012 250);
-  --destructive:          oklch(0.50 0.16 30);      /* terracotta */
-  --border:               oklch(0.88 0.01 90);
-  --input:                oklch(0.86 0.01 90);
-  --ring:                 oklch(0.55 0.05 150);
-  --income:               oklch(0.42 0.09 150);     /* moss */
-  --expense:              oklch(0.50 0.14 35);      /* terracotta */
-  --chart-1:              oklch(0.42 0.09 150);     /* moss */
-  --chart-2:              oklch(0.50 0.14 35);      /* terracotta */
-  --chart-3:              oklch(0.55 0.09 230);     /* slate blue */
-  --chart-4:              oklch(0.62 0.10 90);      /* mustard */
-  --chart-5:              oklch(0.40 0.08 290);     /* aubergine */
-  --radius:               0.25rem;                  /* sharper */
-  --sidebar:                      oklch(0.99 0.005 95);
-  --sidebar-foreground:           oklch(0.18 0.012 250);
-  --sidebar-primary:              oklch(0.36 0.06 150);
-  --sidebar-primary-foreground:   oklch(0.99 0.005 95);
-  --sidebar-accent:               oklch(0.94 0.01 90);
-  --sidebar-accent-foreground:    oklch(0.22 0.012 250);
-  --sidebar-border:               oklch(0.88 0.01 90);
-  --sidebar-ring:                 oklch(0.55 0.05 150);
+  /* Brand */
+  --ss-indigo:        #3D396E;
+  --ss-periwinkle:    #8E9FEE;
+  --ss-sky:           #8CC6FF;
+  --ss-indigo-press:  #2D2A52;
+
+  /* Surfaces — Light */
+  --ss-cream:         #FAF8F5;
+  --ss-warm-veil:     #F1EFEC;
+  --ss-white:         #FFFFFF;
+  --ss-lavender:      #E1E4F6;
+
+  /* Surfaces — Dark */
+  --ss-ink:           #0C0B14;
+  --ss-elevated:      #15131F;
+  --ss-surface-indigo:#1F1B2E;
+
+  /* Typography stacks */
+  --font-sans:  'mr-eaves-sans', 'Mr Eaves Sans OT', 'Avenir Next', 'Avenir', 'Helvetica Neue', system-ui, Arial, sans-serif;
+  --font-serif: 'minion-3', 'Minion 3 Pro', 'Minion Pro', Garamond, Georgia, serif;
+  --font-mono:  'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* Brand-tinted shadows (indigo) */
+  --shadow-soft-indigo:
+    rgba(60, 57, 110, 0.04) 0px 4px 18px,
+    rgba(60, 57, 110, 0.027) 0px 2px 7.85px,
+    rgba(60, 57, 110, 0.02) 0px 0.8px 2.93px;
+  --shadow-elevated:
+    rgba(60, 57, 110, 0.08) 0px 14px 28px,
+    rgba(60, 57, 110, 0.05) 0px 23px 52px,
+    rgba(0, 0, 0, 0.04) 0px 7px 15px;
+  --shadow-floating:
+    rgba(60, 57, 110, 0.16) 0px 30px 60px -12px,
+    rgba(60, 57, 110, 0.10) 0px 18px 36px -18px,
+    rgba(0, 0, 0, 0.04) 0px 8px 17px;
+  --shadow-ring-focus: 0 0 0 3px rgba(60, 57, 110, 0.45);
 }
 
+/* ---------- Light theme = Parchment Canvas ---------- */
+:root {
+  --background:           #FAF8F5;                  /* Parchment */
+  --foreground:           #0C0B14;                  /* Void as ink */
+  --card:                 #FFFFFF;
+  --card-foreground:      #0C0B14;
+  --popover:              #FFFFFF;
+  --popover-foreground:   #0C0B14;
+  --primary:              #3D396E;                  /* Indigo Authority */
+  --primary-foreground:   #FAF8F5;
+  --secondary:            #F1EFEC;                  /* Warm Veil */
+  --secondary-foreground: #0C0B14;
+  --muted:                #F1EFEC;
+  --muted-foreground:     rgba(12, 11, 20, 0.62);
+  --accent:               #E1E4F6;                  /* Mist Lavender */
+  --accent-foreground:    #3D396E;
+  --destructive:          #9B4444;                  /* deep brick */
+  --border:               rgba(60, 57, 110, 0.10);  /* whisper */
+  --input:                rgba(60, 57, 110, 0.18);
+  --ring:                 #3D396E;                  /* Indigo Authority — solid focus for WCAG 1.4.11 */
+  --income:               #3D6B5E;                  /* darkened sage → 4.7:1 on Parchment */
+  --expense:              #9B4444;                  /* deep brick */
+  --chart-1:              #3D396E;
+  --chart-2:              #9B4444;
+  --chart-3:              #8CC6FF;
+  --chart-4:              #9B7C44;
+  --chart-5:              #3D6B5E;
+  --radius:               0.75rem;                  /* 12px → cards */
+  --sidebar:                      #FAF8F5;
+  --sidebar-foreground:           #0C0B14;
+  --sidebar-primary:              #3D396E;
+  --sidebar-primary-foreground:   #FAF8F5;
+  --sidebar-accent:               #E1E4F6;
+  --sidebar-accent-foreground:    #3D396E;
+  --sidebar-border:               rgba(60, 57, 110, 0.10);
+  --sidebar-ring:                 #8E9FEE;
+}
+
+/* ---------- Dark theme = Deep Indigo Void ---------- */
 .dark {
-  --background:           oklch(0.13 0.01 250);     /* deep ink */
-  --foreground:           oklch(0.94 0.008 90);     /* warm paper */
-  --card:                 oklch(0.17 0.012 250);
-  --card-foreground:      oklch(0.94 0.008 90);
-  --popover:              oklch(0.17 0.012 250);
-  --popover-foreground:   oklch(0.94 0.008 90);
-  --primary:              oklch(0.72 0.08 150);     /* lighter moss */
-  --primary-foreground:   oklch(0.13 0.01 250);
-  --secondary:            oklch(0.25 0.012 250);
-  --secondary-foreground: oklch(0.94 0.008 90);
-  --muted:                oklch(0.22 0.012 250);
-  --muted-foreground:     oklch(0.68 0.012 90);
-  --accent:               oklch(0.25 0.012 250);
-  --accent-foreground:    oklch(0.94 0.008 90);
-  --destructive:          oklch(0.68 0.18 30);
-  --border:               oklch(1 0 0 / 12%);
-  --input:                oklch(1 0 0 / 16%);
-  --ring:                 oklch(0.55 0.06 150);
-  --income:               oklch(0.72 0.10 150);
-  --expense:              oklch(0.70 0.16 35);
-  --chart-1:              oklch(0.72 0.10 150);
-  --chart-2:              oklch(0.70 0.16 35);
-  --chart-3:              oklch(0.70 0.09 230);
-  --chart-4:              oklch(0.74 0.11 90);
-  --chart-5:              oklch(0.62 0.10 290);
-  --sidebar:                      oklch(0.13 0.01 250);
-  --sidebar-foreground:           oklch(0.94 0.008 90);
-  --sidebar-primary:              oklch(0.72 0.08 150);
-  --sidebar-primary-foreground:   oklch(0.13 0.01 250);
-  --sidebar-accent:               oklch(0.25 0.012 250);
-  --sidebar-accent-foreground:    oklch(0.94 0.008 90);
-  --sidebar-border:               oklch(1 0 0 / 12%);
-  --sidebar-ring:                 oklch(0.55 0.06 150);
+  --background:           #0C0B14;                  /* Void */
+  --foreground:           #FAF8F5;                  /* Parchment as light */
+  --card:                 #15131F;                  /* Elevated Void */
+  --card-foreground:      #FAF8F5;
+  --popover:              #15131F;
+  --popover-foreground:   #FAF8F5;
+  --primary:              #8E9FEE;                  /* Lavender Insight */
+  --primary-foreground:   #0C0B14;
+  --secondary:            #1F1B2E;                  /* Surface Indigo */
+  --secondary-foreground: #FAF8F5;
+  --muted:                #1F1B2E;
+  --muted-foreground:     rgba(250, 248, 245, 0.66);
+  --accent:               #1F1B2E;
+  --accent-foreground:    #8E9FEE;
+  --destructive:          #9B4444;
+  --border:               rgba(225, 228, 246, 0.08);
+  --input:                rgba(225, 228, 246, 0.14);
+  --ring:                 #8E9FEE;
+  --income:               #7BB59F;                  /* lifted sage on dark */
+  --expense:              #C26B6B;                  /* lifted brick on dark */
+  --chart-1:              #8E9FEE;
+  --chart-2:              #C26B6B;
+  --chart-3:              #8CC6FF;
+  --chart-4:              #C8A36B;
+  --chart-5:              #7BB59F;
+  --sidebar:                      #0C0B14;
+  --sidebar-foreground:           #FAF8F5;
+  --sidebar-primary:              #8E9FEE;
+  --sidebar-primary-foreground:   #0C0B14;
+  --sidebar-accent:               #1F1B2E;
+  --sidebar-accent-foreground:    #8E9FEE;
+  --sidebar-border:               rgba(225, 228, 246, 0.08);
+  --sidebar-ring:                 #8E9FEE;
 }
 
+/* ---------- Base elements ---------- */
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: "ss01", "cv11";
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
   html {
-    @apply font-sans;
+    font-family: var(--font-sans);
   }
-  h1, h2, h3, h4 {
-    font-family: var(--font-heading), ui-serif, Georgia, serif;
-    font-feature-settings: "ss01", "ss02";
-    letter-spacing: -0.01em;
+  /* Display + headings — Mr Eaves sans, Soulstory tracking */
+  h1 { font-family: var(--font-sans); letter-spacing: -0.6px; }
+  h2 { font-family: var(--font-sans); letter-spacing: -0.4px; }
+  h3 { font-family: var(--font-sans); letter-spacing: -0.2px; }
+  h4 { font-family: var(--font-sans); }
+}
+
+/* ---------- Soulstory typography utilities ---------- */
+.t-display-hero  { font-family: var(--font-sans); font-size: 4.5rem;  font-weight: 400; line-height: 1.05; letter-spacing: -1.8px; }
+.t-display-large { font-family: var(--font-sans); font-size: 3.5rem;  font-weight: 400; line-height: 1.08; letter-spacing: -1.4px; }
+.t-display       { font-family: var(--font-sans); font-size: 2.75rem; font-weight: 600; line-height: 1.12; letter-spacing: -1.0px; }
+.t-h1            { font-family: var(--font-sans); font-size: 2.25rem; font-weight: 600; line-height: 1.18; letter-spacing: -0.6px; }
+.t-h2            { font-family: var(--font-sans); font-size: 1.75rem; font-weight: 600; line-height: 1.25; letter-spacing: -0.4px; }
+.t-h3            { font-family: var(--font-sans); font-size: 1.375rem;font-weight: 600; line-height: 1.30; letter-spacing: -0.2px; }
+.t-h4            { font-family: var(--font-sans); font-size: 1.125rem;font-weight: 600; line-height: 1.35; }
+
+.t-tagline       { font-family: var(--font-serif); font-style: italic; font-size: 0.875rem; line-height: 1.45; letter-spacing: 0.2px; }
+.t-attribution   { font-family: var(--font-serif); font-style: italic; font-size: 0.875rem; line-height: 1.45; }
+.t-pull-quote    { font-family: var(--font-serif); font-size: 1.75rem; line-height: 1.30; }
+.t-editorial     { font-family: var(--font-serif); font-size: 1.0625rem; line-height: 1.70; }
+
+.t-overline      { font-family: var(--font-sans); font-size: 0.6875rem; font-weight: 600; line-height: 1.40; letter-spacing: 0.6px; text-transform: uppercase; }
+.t-label         { font-family: var(--font-sans); font-size: 0.8125rem; font-weight: 600; line-height: 1.40; letter-spacing: 0.1px; }
+.t-button        { font-family: var(--font-sans); font-size: 0.9375rem; font-weight: 600; line-height: 1.00; }
+.t-micro         { font-family: var(--font-sans); font-size: 0.75rem;   font-weight: 400; line-height: 1.40; letter-spacing: 0.1px; }
+
+/* ---------- A11y · keyboard focus ring (lavender) ---------- */
+:focus { outline: none; }
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: none;
+  border-color: var(--ring);
+  box-shadow: var(--shadow-ring-focus);
+}
+
+/* ---------- A11y · reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
-/* Editorial detail: hairline rule between sections / nav items */
+/* Hairline rule between sections / nav items (Soulstory whisper border) */
 .rule {
   border-color: var(--border);
 }

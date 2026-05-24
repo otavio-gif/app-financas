@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState, useTransition } from "react";
+import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import { Check, Pencil, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PageHeader } from "@/components/page-header";
 import type { Database } from "@/lib/supabase/database.types";
 import {
   createCategory,
@@ -72,14 +73,7 @@ export function CategoriesView({ categories, usage }: CategoriesViewProps) {
 
   return (
     <div className="space-y-10">
-      <header className="space-y-2 border-b border-border pb-4">
-        <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
-          Taxonomia
-        </p>
-        <h1 className="font-heading text-4xl font-light leading-none tracking-tight md:text-5xl">
-          Categorias
-        </h1>
-      </header>
+      <PageHeader overline="Taxonomia" title="Categorias" size="md" />
 
       <CategorySection
         title="Despesas"
@@ -179,11 +173,11 @@ function CategorySection({
     <section className="space-y-4">
       <div className="flex items-center justify-between border-b border-border pb-2">
         <h2
-          className={`font-heading text-xl font-medium tracking-tight ${accent}`}
+          className={`font-sans text-xl font-semibold tracking-[-0.2px] ${accent}`}
         >
           {title}
         </h2>
-        <Button size="sm" variant="outline" onClick={onCreate}>
+        <Button variant="outline" onClick={onCreate}>
           <Plus className="h-4 w-4" />
           Adicionar
         </Button>
@@ -205,7 +199,7 @@ function CategorySection({
                 aria-hidden="true"
               />
               <div className="min-w-0 flex-1">
-                <p className="truncate font-medium">{c.name}</p>
+                <p className="truncate font-semibold">{c.name}</p>
                 <p className="font-mono text-xs text-muted-foreground tabular-nums">
                   {usage[c.id] ?? 0}{" "}
                   {(usage[c.id] ?? 0) === 1 ? "transação" : "transações"}
@@ -266,9 +260,15 @@ function CategoryForm({
     editing?.color ?? (type === "income" ? "#10b981" : "#ef4444"),
   );
 
+  const nameRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     if (formState?.message) onSuccess();
   }, [formState, onSuccess]);
+
+  useEffect(() => {
+    if (formState?.error) nameRef.current?.focus();
+  }, [formState?.error]);
 
   return (
     <>
@@ -286,11 +286,15 @@ function CategoryForm({
         <input type="hidden" name="color" value={color} />
 
         <div className="space-y-1.5">
-          <Label htmlFor="name">Nome</Label>
+          <Label htmlFor="name">
+            Nome <span aria-hidden="true" className="text-destructive">*</span>
+          </Label>
           <Input
             id="name"
             name="name"
+            ref={nameRef}
             required
+            aria-required="true"
             maxLength={40}
             defaultValue={editing?.name ?? ""}
             placeholder="Ex: Mercado, Salário..."
@@ -299,7 +303,7 @@ function CategoryForm({
         </div>
 
         <div className="space-y-1.5">
-          <span id="color-label" className="text-sm font-medium leading-none">
+          <span id="color-label" className="text-sm font-semibold leading-none">
             Cor
           </span>
           <div
@@ -316,7 +320,7 @@ function CategoryForm({
                   role="radio"
                   aria-checked={selected}
                   onClick={() => setColor(c.hex)}
-                  className="relative flex h-8 w-8 items-center justify-center rounded-full ring-offset-background transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:scale-110 motion-reduce:transition-none motion-reduce:hover:scale-100"
+                  className="relative flex h-11 w-11 items-center justify-center rounded-full ring-offset-background transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:scale-110 motion-reduce:transition-none motion-reduce:hover:scale-100"
                   style={{ backgroundColor: c.hex }}
                   aria-label={c.name}
                 >

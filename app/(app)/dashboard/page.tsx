@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { PageHeader } from "@/components/page-header";
+import { Stat } from "@/components/stat";
 import { currencyBRL, formatDateBR } from "@/lib/format";
 import type { Database } from "@/lib/supabase/database.types";
 import { DashboardCharts } from "./charts-loader";
@@ -71,14 +73,10 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-10">
-      <header className="space-y-2 border-b border-border pb-6">
-        <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
-          {capitalizedMonth(now)} {now.getFullYear()}
-        </p>
-        <h1 className="font-heading text-5xl font-light leading-none tracking-tight md:text-6xl">
-          Resumo
-        </h1>
-      </header>
+      <PageHeader
+        overline={`${capitalizedMonth(now)} ${now.getFullYear()}`}
+        title="Resumo"
+      />
 
       <section className="grid gap-x-12 gap-y-8 md:grid-cols-3">
         <Stat
@@ -87,16 +85,8 @@ export default async function DashboardPage() {
           tone={balance >= 0 ? "positive" : "negative"}
           delta={balanceDelta}
         />
-        <Stat
-          label="Receitas"
-          value={monthIncome}
-          tone="positive"
-        />
-        <Stat
-          label="Despesas"
-          value={monthExpense}
-          tone="negative"
-        />
+        <Stat label="Receitas" value={monthIncome} tone="positive" />
+        <Stat label="Despesas" value={monthExpense} tone="negative" />
       </section>
 
       <DashboardCharts
@@ -106,12 +96,12 @@ export default async function DashboardPage() {
 
       <section className="space-y-4 border-t border-border pt-6">
         <div className="flex items-baseline justify-between">
-          <h2 className="font-heading text-2xl font-medium tracking-tight">
+          <h2 className="t-h2">
             Últimas transações
           </h2>
           <Link
             href="/transactions"
-            className="inline-flex items-center gap-1 text-xs uppercase tracking-[0.14em] text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+            className="t-overline inline-flex items-center gap-1 text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
           >
             Ver todas <ArrowRight className="h-3 w-3" />
           </Link>
@@ -134,7 +124,7 @@ export default async function DashboardPage() {
                   className="grid grid-cols-[1fr_auto] items-baseline gap-4 py-3"
                 >
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium">
+                    <p className="truncate text-sm font-semibold">
                       {tx.description ?? cat?.name ?? "Sem descrição"}
                     </p>
                     <p className="text-xs text-muted-foreground">
@@ -162,43 +152,6 @@ export default async function DashboardPage() {
           </ul>
         )}
       </section>
-    </div>
-  );
-}
-
-function Stat({
-  label,
-  value,
-  tone,
-  delta,
-}: {
-  label: string;
-  value: number;
-  tone: "positive" | "negative" | "neutral";
-  delta?: number | null;
-}) {
-  const toneColor =
-    tone === "positive"
-      ? "text-[color:var(--income)]"
-      : tone === "negative"
-        ? "text-[color:var(--expense)]"
-        : "text-foreground";
-
-  const deltaSign = delta !== null && delta !== undefined && delta > 0 ? "+" : "";
-
-  return (
-    <div className="space-y-2 border-l border-border pl-5 md:border-l-0 md:border-t md:pl-0 md:pt-5">
-      <p className="text-xs uppercase tracking-[0.14em] text-muted-foreground">
-        {label}
-      </p>
-      <p className={`font-mono text-3xl font-medium tabular-nums ${toneColor}`}>
-        {currencyBRL.format(value)}
-      </p>
-      {delta !== null && delta !== undefined && (
-        <p className="font-mono text-xs text-muted-foreground tabular-nums">
-          {deltaSign}{delta.toFixed(1)}% vs mês anterior
-        </p>
-      )}
     </div>
   );
 }

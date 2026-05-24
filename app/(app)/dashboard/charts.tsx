@@ -29,14 +29,14 @@ const tooltipItemStyle: React.CSSProperties = {
 };
 const tooltipLabelStyle: React.CSSProperties = {
   color: "var(--muted-foreground)",
-  fontSize: 10,
+  fontSize: 12,
   letterSpacing: "0.12em",
   textTransform: "uppercase",
   marginBottom: 4,
 };
-const axisTickStyle = { fontSize: 11, fill: "var(--muted-foreground)" };
+const axisTickStyle = { fontSize: 12, fill: "var(--muted-foreground)" };
 const legendStyle: React.CSSProperties = {
-  fontSize: 11,
+  fontSize: 12,
   color: "var(--muted-foreground)",
   letterSpacing: "0.08em",
   textTransform: "uppercase",
@@ -51,14 +51,39 @@ export function DashboardCharts({
   expenseByCategory,
   monthlyTrend,
 }: DashboardChartsProps) {
+  const expenseTotal = expenseByCategory.reduce((s, r) => s + r.total, 0);
+  const expenseSummary =
+    expenseByCategory.length === 0
+      ? "Sem despesas no mês atual."
+      : `Despesas por categoria no mês atual, total ${currencyBRL.format(expenseTotal)}. ` +
+        expenseByCategory
+          .map(
+            (r) =>
+              `${r.name}: ${currencyBRL.format(r.total)} (${expenseTotal > 0 ? Math.round((r.total / expenseTotal) * 100) : 0}%)`,
+          )
+          .join(", ") +
+        ".";
+
+  const trendSummary =
+    monthlyTrend.length === 0
+      ? "Sem histórico mensal."
+      : `Evolução de receitas e despesas nos últimos ${monthlyTrend.length} meses. ` +
+        monthlyTrend
+          .map(
+            (m) =>
+              `${m.label}: receitas ${currencyBRL.format(m.income)}, despesas ${currencyBRL.format(m.expense)}`,
+          )
+          .join("; ") +
+        ".";
+
   return (
     <div className="grid gap-8 border-y border-border py-6 lg:grid-cols-2">
       <section className="space-y-3">
         <header className="flex items-baseline justify-between">
-          <h2 className="font-heading text-lg font-medium tracking-tight">
+          <h2 className="font-sans text-lg font-semibold tracking-[-0.2px]">
             Despesas por categoria
           </h2>
-          <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+          <p className="font-mono text-xs uppercase tracking-[0.14em] text-muted-foreground">
             Mês atual
           </p>
         </header>
@@ -67,7 +92,11 @@ export function DashboardCharts({
             Sem despesas no mês.
           </p>
         ) : (
-          <div className="h-72">
+          <figure
+            role="img"
+            aria-label={expenseSummary}
+            className="h-72"
+          >
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -100,20 +129,37 @@ export function DashboardCharts({
                 />
               </PieChart>
             </ResponsiveContainer>
-          </div>
+            <table className="sr-only">
+              <caption>Despesas por categoria no mês atual</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Categoria</th>
+                  <th scope="col">Valor</th>
+                </tr>
+              </thead>
+              <tbody>
+                {expenseByCategory.map((r) => (
+                  <tr key={r.name}>
+                    <th scope="row">{r.name}</th>
+                    <td>{currencyBRL.format(r.total)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </figure>
         )}
       </section>
 
       <section className="space-y-3">
         <header className="flex items-baseline justify-between">
-          <h2 className="font-heading text-lg font-medium tracking-tight">
+          <h2 className="font-sans text-lg font-semibold tracking-[-0.2px]">
             Evolução mensal
           </h2>
-          <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+          <p className="font-mono text-xs uppercase tracking-[0.14em] text-muted-foreground">
             Últimos 6 meses
           </p>
         </header>
-        <div className="h-72">
+        <figure role="img" aria-label={trendSummary} className="h-72">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
               data={monthlyTrend}
@@ -173,7 +219,26 @@ export function DashboardCharts({
               />
             </LineChart>
           </ResponsiveContainer>
-        </div>
+          <table className="sr-only">
+            <caption>Evolução mensal de receitas e despesas</caption>
+            <thead>
+              <tr>
+                <th scope="col">Mês</th>
+                <th scope="col">Receitas</th>
+                <th scope="col">Despesas</th>
+              </tr>
+            </thead>
+            <tbody>
+              {monthlyTrend.map((m) => (
+                <tr key={m.label}>
+                  <th scope="row">{m.label}</th>
+                  <td>{currencyBRL.format(m.income)}</td>
+                  <td>{currencyBRL.format(m.expense)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </figure>
       </section>
     </div>
   );

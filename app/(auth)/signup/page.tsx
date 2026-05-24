@@ -12,9 +12,9 @@ export default function SignupPage() {
           App Finanças
         </Link>
         <div className="space-y-6">
-          <h1 className="font-heading text-5xl font-light leading-[1.05] tracking-tight">
+          <h1 className="font-sans text-5xl font-normal leading-[1.05] tracking-[-1.4px]">
             Comece a<br />
-            <em>escrever</em><br />
+            <em className="t-tagline text-[length:inherit]">escrever</em><br />
             seu próprio<br />
             balanço.
           </h1>
@@ -23,7 +23,7 @@ export default function SignupPage() {
             você ajustar. Sem cartão, sem trial.
           </p>
         </div>
-        <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+        <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
           Edição 001 · Maio 2026
         </p>
       </aside>
@@ -34,7 +34,7 @@ export default function SignupPage() {
             <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
               Cadastro
             </p>
-            <h2 className="font-heading text-3xl font-light tracking-tight">
+            <h2 className="font-sans text-3xl font-normal tracking-[-1.0px]">
               Criar conta
             </h2>
           </header>

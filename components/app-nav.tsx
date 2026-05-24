@@ -21,9 +21,9 @@ export function AppNav() {
             key={link.href}
             href={link.href}
             aria-current={active ? "page" : undefined}
-            className={`transition hover:text-foreground ${
+            className={`relative py-1 transition hover:text-foreground ${
               active
-                ? "text-foreground font-medium"
+                ? "text-foreground font-semibold after:absolute after:inset-x-0 after:-bottom-px after:h-0.5 after:bg-foreground"
                 : "text-muted-foreground"
             }`}
           >

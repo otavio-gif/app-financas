@@ -12,19 +12,19 @@ export default function LoginPage() {
           App Finanças
         </Link>
         <div className="space-y-6">
-          <h1 className="font-heading text-5xl font-light leading-[1.05] tracking-tight">
+          <h1 className="font-sans text-5xl font-normal leading-[1.05] tracking-[-1.4px]">
             Dinheiro é<br />
-            <em className="text-[color:var(--income)]">só</em> dinheiro
+            <em className="not-italic text-[color:var(--income)]">só</em> dinheiro
             <br />
             quando você<br />
-            o <em className="italic">conhece</em>.
+            o <em className="t-tagline text-[length:inherit]">conhece</em>.
           </h1>
           <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
             Um caderno digital pras suas receitas e despesas. Sem fricção,
             sem anúncio, sem categoria mágica feita por algoritmo.
           </p>
         </div>
-        <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+        <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
           Edição 001 · Maio 2026
         </p>
       </aside>
@@ -35,7 +35,7 @@ export default function LoginPage() {
             <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
               Acesso
             </p>
-            <h2 className="font-heading text-3xl font-light tracking-tight">
+            <h2 className="font-sans text-3xl font-normal tracking-[-1.0px]">
               Entrar
             </h2>
           </header>
