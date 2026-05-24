@@ -22,18 +22,28 @@ import {
   updateTransaction,
   type TransactionState,
 } from "./actions";
+import { TransactionsFilters } from "./transactions-filters";
 
 type Category = Database["public"]["Tables"]["categories"]["Row"];
 type Transaction = Database["public"]["Tables"]["transactions"]["Row"];
 
+type Filters = {
+  month?: string;
+  type?: string;
+  category?: string;
+  q?: string;
+};
+
 interface TransactionsViewProps {
   transactions: Transaction[];
   categories: Category[];
+  filters: Filters;
 }
 
 export function TransactionsView({
   transactions,
   categories,
+  filters,
 }: TransactionsViewProps) {
   const [dialogState, setDialogState] = useState<
     { mode: "create" } | { mode: "edit"; transaction: Transaction } | null
@@ -50,27 +60,66 @@ export function TransactionsView({
     });
   }
 
+  const totalIncome = transactions
+    .filter((t) => t.type === "income")
+    .reduce((acc, t) => acc + Number(t.amount), 0);
+  const totalExpense = transactions
+    .filter((t) => t.type === "expense")
+    .reduce((acc, t) => acc + Number(t.amount), 0);
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Transações</h1>
-          <p className="text-sm text-muted-foreground">
-            Suas receitas e despesas
-          </p>
-        </div>
+        <h1 className="text-2xl font-semibold tracking-tight">Transações</h1>
         <Button onClick={() => setDialogState({ mode: "create" })}>
           <Plus className="h-4 w-4" />
           Nova transação
         </Button>
       </div>
 
+      <TransactionsFilters categories={categories} initial={filters} />
+
+      <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+        <span>
+          <span className="font-medium text-foreground">
+            {transactions.length}
+          </span>{" "}
+          {transactions.length === 1 ? "transação" : "transações"}
+        </span>
+        <span className="text-emerald-600">
+          + {currencyBRL.format(totalIncome)}
+        </span>
+        <span className="text-rose-600">
+          − {currencyBRL.format(totalExpense)}
+        </span>
+        <span className="ml-auto">
+          Saldo:{" "}
+          <span
+            className={`font-medium tabular-nums ${
+              totalIncome - totalExpense >= 0
+                ? "text-emerald-600"
+                : "text-rose-600"
+            }`}
+          >
+            {currencyBRL.format(totalIncome - totalExpense)}
+          </span>
+        </span>
+      </div>
+
       {transactions.length === 0 ? (
         <div className="rounded-lg border border-dashed py-16 text-center">
-          <p className="text-muted-foreground">Nenhuma transação ainda.</p>
-          <p className="text-sm text-muted-foreground">
-            Clique em &quot;Nova transação&quot; para começar.
-          </p>
+          {filters.month || filters.type || filters.category || filters.q ? (
+            <p className="text-muted-foreground">
+              Nenhuma transação encontrada para esses filtros.
+            </p>
+          ) : (
+            <>
+              <p className="text-muted-foreground">Nenhuma transação ainda.</p>
+              <p className="text-sm text-muted-foreground">
+                Clique em &quot;Nova transação&quot; para começar.
+              </p>
+            </>
+          )}
         </div>
       ) : (
         <div className="overflow-hidden rounded-lg border">
