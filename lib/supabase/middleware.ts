@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import type { Database } from "./database.types";
 
-const PROTECTED_PREFIXES = ["/dashboard"];
+const PROTECTED_PREFIXES = ["/dashboard", "/transactions", "/categories"];
 const AUTH_PREFIXES = ["/login", "/signup"];
 
 export async function updateSession(request: NextRequest) {

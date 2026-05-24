@@ -36,6 +36,12 @@ export default async function AppLayout({
               >
                 Transações
               </Link>
+              <Link
+                href="/categories"
+                className="text-muted-foreground transition hover:text-foreground"
+              >
+                Categorias
+              </Link>
             </nav>
           </div>
           <div className="flex items-center gap-3">
