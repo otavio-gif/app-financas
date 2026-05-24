@@ -72,16 +72,24 @@ export function TransactionsFilters({ categories, initial }: FiltersProps) {
   const hasActiveFilters =
     initial.month || initial.type || initial.category || initial.q;
 
+  const selectClass =
+    "h-9 rounded-md border border-input bg-transparent px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50";
+
   return (
     <div
+      aria-busy={pending}
       className={`flex flex-wrap items-end gap-3 rounded-lg border bg-card p-3 ${pending ? "opacity-70" : ""}`}
     >
       <div className="space-y-1">
-        <label className="text-xs text-muted-foreground">Mês</label>
+        <label htmlFor="filter-month" className="text-xs text-muted-foreground">
+          Mês
+        </label>
         <select
+          id="filter-month"
           value={initial.month ?? "all"}
           onChange={(e) => updateParam("month", e.target.value)}
-          className="h-9 rounded-md border border-input bg-transparent px-3 text-sm"
+          disabled={pending}
+          className={selectClass}
         >
           <option value="all">Todos</option>
           {months.map((m) => (
@@ -93,11 +101,15 @@ export function TransactionsFilters({ categories, initial }: FiltersProps) {
       </div>
 
       <div className="space-y-1">
-        <label className="text-xs text-muted-foreground">Tipo</label>
+        <label htmlFor="filter-type" className="text-xs text-muted-foreground">
+          Tipo
+        </label>
         <select
+          id="filter-type"
           value={initial.type ?? "all"}
           onChange={(e) => updateParam("type", e.target.value)}
-          className="h-9 rounded-md border border-input bg-transparent px-3 text-sm"
+          disabled={pending}
+          className={selectClass}
         >
           <option value="all">Todos</option>
           <option value="expense">Despesas</option>
@@ -106,11 +118,18 @@ export function TransactionsFilters({ categories, initial }: FiltersProps) {
       </div>
 
       <div className="space-y-1">
-        <label className="text-xs text-muted-foreground">Categoria</label>
+        <label
+          htmlFor="filter-category"
+          className="text-xs text-muted-foreground"
+        >
+          Categoria
+        </label>
         <select
+          id="filter-category"
           value={initial.category ?? "all"}
           onChange={(e) => updateParam("category", e.target.value)}
-          className="h-9 rounded-md border border-input bg-transparent px-3 text-sm"
+          disabled={pending}
+          className={selectClass}
         >
           <option value="all">Todas</option>
           {categories.map((c) => (

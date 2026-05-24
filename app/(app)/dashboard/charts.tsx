@@ -22,6 +22,21 @@ import {
 } from "@/components/ui/card";
 import { currencyBRL } from "@/lib/format";
 
+const tooltipContentStyle: React.CSSProperties = {
+  background: "var(--popover)",
+  border: "1px solid var(--border)",
+  borderRadius: "0.5rem",
+  color: "var(--popover-foreground)",
+  fontSize: 12,
+};
+const tooltipItemStyle: React.CSSProperties = {
+  color: "var(--popover-foreground)",
+};
+const tooltipLabelStyle: React.CSSProperties = {
+  color: "var(--popover-foreground)",
+  fontWeight: 500,
+};
+
 interface DashboardChartsProps {
   expenseByCategory: { name: string; color: string; total: number }[];
   monthlyTrend: { label: string; income: number; expense: number }[];
@@ -62,11 +77,14 @@ export function DashboardCharts({
                   </Pie>
                   <Tooltip
                     formatter={(value) => currencyBRL.format(Number(value ?? 0))}
+                    contentStyle={tooltipContentStyle}
+                    itemStyle={tooltipItemStyle}
+                    labelStyle={tooltipLabelStyle}
                   />
                   <Legend
                     verticalAlign="bottom"
                     iconType="circle"
-                    wrapperStyle={{ fontSize: 12 }}
+                    wrapperStyle={{ fontSize: 12, color: "var(--foreground)" }}
                   />
                 </PieChart>
               </ResponsiveContainer>
@@ -105,10 +123,13 @@ export function DashboardCharts({
                 />
                 <Tooltip
                   formatter={(value) => currencyBRL.format(Number(value ?? 0))}
+                  contentStyle={tooltipContentStyle}
+                  itemStyle={tooltipItemStyle}
+                  labelStyle={tooltipLabelStyle}
                 />
                 <Legend
                   iconType="circle"
-                  wrapperStyle={{ fontSize: 12 }}
+                  wrapperStyle={{ fontSize: 12, color: "var(--foreground)" }}
                 />
                 <Line
                   type="monotone"

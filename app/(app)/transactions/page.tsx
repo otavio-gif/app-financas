@@ -11,6 +11,12 @@ type SearchParams = {
   q?: string;
 };
 
+const MONTH_RE = /^\d{4}-\d{2}$/;
+
+function escapeLikePattern(input: string): string {
+  return input.replace(/[\\%_]/g, "\\$&");
+}
+
 export default async function TransactionsPage({
   searchParams,
 }: {
@@ -21,11 +27,11 @@ export default async function TransactionsPage({
 
   let query = supabase
     .from("transactions")
-    .select("*")
+    .select("id, type, amount, description, occurred_on, category_id")
     .order("occurred_on", { ascending: false })
     .order("created_at", { ascending: false });
 
-  if (params.month && /^\d{4}-\d{2}$/.test(params.month)) {
+  if (params.month && MONTH_RE.test(params.month)) {
     const [y, m] = params.month.split("-").map(Number);
     const start = isoFromDate(new Date(y, m - 1, 1));
     const end = isoFromDate(new Date(y, m, 0));
@@ -41,7 +47,10 @@ export default async function TransactionsPage({
   }
 
   if (params.q && params.q.trim().length > 0) {
-    query = query.ilike("description", `%${params.q.trim()}%`);
+    query = query.ilike(
+      "description",
+      `%${escapeLikePattern(params.q.trim())}%`,
+    );
   }
 
   const [{ data: transactions }, { data: categories }] = await Promise.all([

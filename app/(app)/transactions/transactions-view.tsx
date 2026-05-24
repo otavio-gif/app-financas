@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState, useTransition } from "react";
+import { useActionState, useEffect, useMemo, useState, useTransition } from "react";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,7 +25,10 @@ import {
 import { TransactionsFilters } from "./transactions-filters";
 
 type Category = Database["public"]["Tables"]["categories"]["Row"];
-type Transaction = Database["public"]["Tables"]["transactions"]["Row"];
+type Transaction = Pick<
+  Database["public"]["Tables"]["transactions"]["Row"],
+  "id" | "type" | "amount" | "description" | "occurred_on" | "category_id"
+>;
 
 type Filters = {
   month?: string;
@@ -60,12 +63,18 @@ export function TransactionsView({
     });
   }
 
-  const totalIncome = transactions
-    .filter((t) => t.type === "income")
-    .reduce((acc, t) => acc + Number(t.amount), 0);
-  const totalExpense = transactions
-    .filter((t) => t.type === "expense")
-    .reduce((acc, t) => acc + Number(t.amount), 0);
+  const categoriesById = useMemo(
+    () => new Map(categories.map((c) => [c.id, c])),
+    [categories],
+  );
+
+  let totalIncome = 0;
+  let totalExpense = 0;
+  for (const t of transactions) {
+    const amount = Number(t.amount);
+    if (t.type === "income") totalIncome += amount;
+    else if (t.type === "expense") totalExpense += amount;
+  }
 
   return (
     <div className="space-y-6">
@@ -135,9 +144,9 @@ export function TransactionsView({
             </thead>
             <tbody>
               {transactions.map((tx) => {
-                const category = categories.find(
-                  (c) => c.id === tx.category_id,
-                );
+                const category = tx.category_id
+                  ? categoriesById.get(tx.category_id)
+                  : undefined;
                 const isIncome = tx.type === "income";
                 return (
                   <tr key={tx.id} className="border-t">

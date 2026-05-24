@@ -4,11 +4,14 @@ import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { currencyBRL, formatDateBR, isoFromDate } from "@/lib/format";
 import type { Database } from "@/lib/supabase/database.types";
-import { DashboardCharts } from "./charts";
+import { DashboardCharts } from "./charts-loader";
 
 export const dynamic = "force-dynamic";
 
-type Transaction = Database["public"]["Tables"]["transactions"]["Row"];
+type Transaction = Pick<
+  Database["public"]["Tables"]["transactions"]["Row"],
+  "id" | "type" | "amount" | "description" | "occurred_on" | "category_id"
+>;
 type Category = Database["public"]["Tables"]["categories"]["Row"];
 
 const MONTH_NAMES_PT = [
@@ -26,7 +29,7 @@ export default async function DashboardPage() {
   const [{ data: txs }, { data: cats }] = await Promise.all([
     supabase
       .from("transactions")
-      .select("*")
+      .select("id, type, amount, description, occurred_on, category_id")
       .gte("occurred_on", isoFromDate(sixMonthsAgo))
       .order("occurred_on", { ascending: false })
       .order("created_at", { ascending: false }),

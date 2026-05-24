@@ -76,6 +76,11 @@ export async function updateTransaction(
   if ("error" in parsed) return parsed;
 
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Sessão expirada. Entre novamente." };
+
   const { error } = await supabase
     .from("transactions")
     .update(parsed)
@@ -88,6 +93,11 @@ export async function updateTransaction(
 
 export async function deleteTransaction(id: string): Promise<void> {
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return;
+
   await supabase.from("transactions").delete().eq("id", id);
   revalidatePath("/transactions");
 }

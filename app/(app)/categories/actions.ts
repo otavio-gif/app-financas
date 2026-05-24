@@ -72,6 +72,11 @@ export async function updateCategory(
   if ("error" in parsed) return parsed;
 
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Sessão expirada. Entre novamente." };
+
   const { error } = await supabase
     .from("categories")
     .update(parsed)
@@ -91,6 +96,11 @@ export async function updateCategory(
 
 export async function deleteCategory(id: string): Promise<void> {
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return;
+
   await supabase.from("categories").delete().eq("id", id);
   revalidatePath("/categories");
   revalidatePath("/transactions");
